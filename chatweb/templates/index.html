@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Input</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .chat-container {
+            max-width: 900px;
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .chat-display {
+            
+            padding: 10px;
+            background-color: #afd0df;
+            height: 400px;
+            overflow-y: scroll;
+        }
+        .chat-input {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #f5f5f5;
+        }
+        .chat-input textarea {
+            flex-grow: 1;
+            margin-right: 10px;
+            padding: 5px;
+            border: 1px solid #e157e6;
+            border-radius: 5px;
+            resize: none;
+            height: 25px;
+            font-family: monospace;
+            white-space: pre;
+            tab-size: 4;
+            font-size: 15px;
+            outline: none;
+            border: none;
+        }
+        button {
+            position: relative;
+            padding: 5px 10px;
+            background-color: #34a2d4;
+            color: white;
+            border: none;
+            left: 800px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-display">
+            <!-- 聊天框 -->
+        </div>
+        <div class="chat-input">
+            <textarea id="message-input" placeholder="请输入内容"></textarea>
+        </div>
+        <button id="submit-btn">发送</button>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/python/python.min.js"></script>
+    <script>
+        var editor = CodeMirror.fromTextArea(document.getElementById('message-input'), {
+            lineNumbers: true,
+            mode: 'python',
+            indentUnit: 4,
+            theme: 'default'
+        });
+
+        // 获取元素
+        const submitBtn = document.getElementById('submit-btn');
+        const chatDisplay = document.querySelector('.chat-display');
+
+        // 添加事件监听器
+        submitBtn.addEventListener('click', sendMessage);
+
+        // 添加回车键发送功能
+        editor.on('keydown', function (cm, event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // 定义函数：发送消息
+        async function sendMessage() {
+            // 获取输入的消息内容
+            const message = editor.getValue();
+
+            // 创建一个新的消息元素
+            const newMessage = document.createElement('div');
+            newMessage.classList.add('message');
+            // 设置消息内容和样式
+            newMessage.innerHTML = '<pre>' + message + '</pre>';
+            newMessage.style.backgroundColor = '#3295c4';
+            newMessage.style.color = 'white';
+            newMessage.style.padding = '5px 10px';
+            newMessage.style.marginBottom = '10px';
+            newMessage.style.textAlign = 'right';
+            newMessage.style.display = 'inline-flex';
+            newMessage.style.justifyContent = 'right';
+            newMessage.style.alignItems = 'center';
+            newMessage.style.width = '100%';
+            newMessage.style.borderRadius = '5px';
+
+            // 将消息添加到对话展示框中
+            chatDisplay.appendChild(newMessage);
+
+            // 清空输入框
+            editor.setValue('');
+
+            try {
+                // 发送消息到后端
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ messages: [{"role": "user", "content": message}] })
+                });
+
+                if (!response.ok) {
+                    throw new Error('网络响应失败');
+                }
+
+                const data = await response.json();
+                const aiMessage = data.response;
+
+                // 显示AI的回复
+                const aiMessageElement = document.createElement('div');
+                aiMessageElement.classList.add('message');
+                aiMessageElement.innerHTML = '<pre>' + aiMessage + '</pre>';
+                aiMessageElement.style.backgroundColor = '#f5f5f5';
+                aiMessageElement.style.color = 'black';
+                aiMessageElement.style.padding = '5px 10px';
+                aiMessageElement.style.marginBottom = '10px';
+                aiMessageElement.style.textAlign = 'left';
+                aiMessageElement.style.display = 'inline-flex';
+                aiMessageElement.style.justifyContent = 'left';
+                aiMessageElement.style.alignItems = 'center';
+                aiMessageElement.style.width = '100%';
+                aiMessageElement.style.borderRadius = '5px';
+                chatDisplay.appendChild(aiMessageElement);
+            } catch (error) {
+                console.error('发送消息失败:', error);
+                alert('发送消息失败，请检查网络连接或后端服务器。');
+            }
+        }
+    </script>
+</body>
+</html>
