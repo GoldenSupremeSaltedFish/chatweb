@@ -14,28 +14,29 @@
         .chat-container {
             max-width: 900px;
             margin: 20px auto;
-            border: 1px solid #ccc;
+            border: 4px solid #ccc;
             border-radius: 10px;
             overflow: hidden;
         }
         .chat-display {
             
             padding: 10px;
-            background-color: #afd0df;
-            height: 400px;
+            background-color: #a5ddf7;
+            height: 570px;
             overflow-y: scroll;
         }
         .chat-input {
             display: flex;
             align-items: center;
             padding: 10px;
-            background-color: #f5f5f5;
+            background-color: #ffffff;
         }
         .chat-input textarea {
             flex-grow: 1;
             margin-right: 10px;
             padding: 5px;
-            border: 1px solid #e157e6;
+            border: 1px solid #47d3e6;
+           
             border-radius: 5px;
             resize: none;
             height: 25px;
@@ -49,7 +50,7 @@
         button {
             position: relative;
             padding: 5px 10px;
-            background-color: #34a2d4;
+            background-color: #57CBFF;
             color: white;
             border: none;
             left: 800px;
@@ -68,6 +69,8 @@
         </div>
         <button id="submit-btn">发送</button>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/python/python.min.js"></script>
     <script>
@@ -101,19 +104,20 @@
             // 创建一个新的消息元素
             const newMessage = document.createElement('div');
             newMessage.classList.add('message');
-            // 设置消息内容和样式
-            newMessage.innerHTML = '<pre>' + message + '</pre>';
-            newMessage.style.backgroundColor = '#3295c4';
+           // 设置消息内容和样式
+            newMessage.innerHTML = '' + message + '';
+            newMessage.style.backgroundColor = '#57CBFF';
             newMessage.style.color = 'white';
-            newMessage.style.padding = '5px 10px';
+            newMessage.style.padding = '5px 10px';  
             newMessage.style.marginBottom = '10px';
-            newMessage.style.textAlign = 'right';
+            newMessage.style.textAlign = 'left';
             newMessage.style.display = 'inline-flex';
             newMessage.style.justifyContent = 'right';
             newMessage.style.alignItems = 'center';
+            newMessage.style.maxWidth = '700px'; // 设置最大宽度为400px
             newMessage.style.width = '100%';
             newMessage.style.borderRadius = '5px';
-
+            newMessage.style.wordWrap = 'break-word'; // 使长单词换行
             // 将消息添加到对话展示框中
             chatDisplay.appendChild(newMessage);
 
@@ -137,21 +141,23 @@
                 const data = await response.json();
                 const aiMessage = data.response;
 
-                // 显示AI的回复
-                const aiMessageElement = document.createElement('div');
-                aiMessageElement.classList.add('message');
-                aiMessageElement.innerHTML = '<pre>' + aiMessage + '</pre>';
-                aiMessageElement.style.backgroundColor = '#f5f5f5';
-                aiMessageElement.style.color = 'black';
-                aiMessageElement.style.padding = '5px 10px';
-                aiMessageElement.style.marginBottom = '10px';
-                aiMessageElement.style.textAlign = 'left';
-                aiMessageElement.style.display = 'inline-flex';
-                aiMessageElement.style.justifyContent = 'left';
-                aiMessageElement.style.alignItems = 'center';
-                aiMessageElement.style.width = '100%';
-                aiMessageElement.style.borderRadius = '5px';
-                chatDisplay.appendChild(aiMessageElement);
+           // 显示AI的回复
+            const aiMessageElement = document.createElement('div');
+            aiMessageElement.classList.add('message');
+            aiMessageElement.innerHTML = '' + aiMessage + '';
+            aiMessageElement.style.backgroundColor = '#4285F4';
+            aiMessageElement.style.color = 'black';
+            aiMessageElement.style.padding = '5px 10px';
+            aiMessageElement.style.marginBottom = '10px';
+            aiMessageElement.style.textAlign = 'left';
+            aiMessageElement.style.display = 'inline-flex';
+            aiMessageElement.style.justifyContent = 'left';
+            aiMessageElement.style.alignItems = 'center';
+            aiMessageElement.style.maxWidth = '700px'; // 设置最大宽度为700px
+            aiMessageElement.style.width = '100%';
+            aiMessageElement.style.borderRadius = '5px';
+            aiMessageElement.style.wordWrap = 'break-word'; // 使长单词换行
+            chatDisplay.appendChild(aiMessageElement);
             } catch (error) {
                 console.error('发送消息失败:', error);
                 alert('发送消息失败，请检查网络连接或后端服务器。');
